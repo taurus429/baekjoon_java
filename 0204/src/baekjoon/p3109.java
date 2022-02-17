@@ -62,7 +62,7 @@ public class p3109 {
 			if (grid[i][width - 1] != 0) {
 				ans++;
 			}
-		}
+		} 
 		System.out.println(ans);
 
 	}
