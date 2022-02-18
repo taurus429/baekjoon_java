@@ -97,7 +97,7 @@ public class p15683 {
 				}
 //				System.out.println();
 			}
-//			System.out.println();
+//			System.out.println(); 
 			if (cnt < min) {
 				min = cnt;
 			}
