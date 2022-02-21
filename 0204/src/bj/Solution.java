@@ -3,45 +3,29 @@ package bj;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.StringTokenizer;
 
 public class Solution {
 	public static void main(String[] args) throws NumberFormatException, IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st;
 		int testcase = Integer.parseInt(br.readLine());
-		for (int t = 0; t < testcase; t++) {
-			String[] input = br.readLine().split(" ");
-			int n = Integer.parseInt(input[0]);
-			int m = Integer.parseInt(input[1]);
-			int[][] grid = new int[n][n];
-			int[][] sum = new int[n][n+1];
-			
-			for (int i=0; i<n; i++) {
-				input = br.readLine().split(" ");
-				for (int j=0;j<n;j++) {
-					grid[i][j] = Integer.parseInt(input[j]);
-				}
+		for(int t=1; t<=testcase; t++) {
+		st = new StringTokenizer(br.readLine(), " ");
+		double x = Double.parseDouble(st.nextToken());
+		double y = Double.parseDouble(st.nextToken());
+		double min = Math.min(x, y);
+		double h =0;
+		double before = -1;
+		while(true) {
+			double res = h*(x-2*h)*(y-2*h);
+			if(before>res) {
+				break;
 			}
-			
-			for (int i=0; i<n; i++) {
-				for (int j=0; j<n; j++) {
-					sum[i][j+1] = sum[i][j] + grid[i][j];
-				}
-			}
-			int flyCount =0;
-			int maxCount = 0;
-			for (int i=0; i<n-m+1; i++) {
-				for (int j=0; j<n-m+1;j++) {
-					for (int k=0; k<m; k++) {
-						flyCount += (sum[i+k][j+m] - sum[i+k][j]);
-					}
-					if (flyCount > maxCount) {
-						maxCount = flyCount;
-					}
-					flyCount =0;
-				}
-			}
-			System.out.printf("#%d %d%n",t+1, maxCount);
-			
+			before = res;
+			h += 0.000001;
+		}
+		System.out.println(String.format("#%d %.6f",t, before));
 		}
 	}
 }
