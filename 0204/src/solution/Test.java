@@ -1,19 +1,22 @@
 package solution;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class Test {
-	static double width = 254;
-	static double height = 124;
+	static double width = 260;
+	static double height = 130;
 	static int ball = 5;
-	static double diameter = 7.5;
-	static double[][] holes = new double[][] { { 0 + diameter / 2, 0 + diameter / 2 }, { 130, 0 },
-			{ 260 - diameter / 2, 0 + diameter / 2 }, { 0 + diameter / 2, 130 - diameter / 2 }, { 130, 130 },
-			{ 260 - diameter / 2, 130 - diameter / 2 } };
-	static double[] myPos = new double[] { 65, 65 };
-
-	static double[][] upIntercept = new double[][] { { 0, 35 }, { 130, 130 }, { 260, 35 } };
-	static double[][] downIntercept = new double[][] { { 0, 95 }, { 130, 0 }, { 260, 95 } };
+	static double realdiameter = 7.5;
+	static double diameter = 6.8;
+	static double[][] holes = new double[][] { { 0 + realdiameter / 2, 0 + realdiameter / 2 }, { width/2, 0 },
+			{ width - realdiameter / 2, 0 + realdiameter / 2 }, { 0 + realdiameter / 2, height - realdiameter / 2 }, { width/2, height },
+			{ width - realdiameter / 2, height - realdiameter / 2 } };
+	static int intercept = 35;
+	static double[][] upIntercept = new double[][] { { 0, intercept }, { width/2, height }, { width, intercept } };
+	static double[][] downIntercept = new double[][] { { 0, height - intercept }, { width/2, 0 }, { width, height - intercept } };
 	static double[][] balls;
 
 	static boolean areaCheck(double[][] intercept, double[] ballPos) {
@@ -30,21 +33,51 @@ public class Test {
 
 	}
 
-	static boolean crashCheck(double[] start, double[] end, double[] otherball) {		
+	static boolean crashCheck(double[] start, double[] end, double[] otherball) {
 		double a = (start[1] - end[1]) / (start[0] - end[0]);
 		double b = -1;
 		double c = start[1] - a * start[0];
-		double res =  Math.abs(a * otherball[0] + b * otherball[1] + c) / Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
-		if (res < diameter && (end[0] - otherball[0]) * (myPos[0] - otherball[0]) < 0) {				
+		double res = Math.abs(a * otherball[0] + b * otherball[1] + c) / Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
+		if (res < realdiameter && (end[0] - otherball[0]) * (start[0] - otherball[0]) < 0) {
 			System.out.println("충돌");
+			System.out.println(Arrays.toString(otherball));
 			return true;
-		}else {
+		} else {
 			return false;
 		}
 	}
 
-	static void getRad(double[] myPos, double[] ballPos, int ballIdx) {
+	static double getDistance(double[] pos1, double[] pos2) {
+		return Math.sqrt(Math.pow(pos1[0] - pos2[0], 2) + Math.pow(pos1[1] - pos2[1], 2));
+	}
+
+	static ArrayList<Double[]> getRad(double[] myPos, double[] ballPos, int ballIdx) {
+		ArrayList<Double[]> candidate = new ArrayList<>();
+		System.out.println(ballIdx +"번구");
 		for (int i = 0; i < 6; i++) {
+			switch (i) {
+			case 0:
+				System.out.println("좌하단");
+				break;
+			case 1:
+				System.out.println("중하단");
+				break;
+			case 2:
+				System.out.println("우하단");
+				break;
+			case 3:
+				System.out.println("좌상단");
+				break;
+			case 4:
+				System.out.println("중상단");
+				break;
+			case 5:
+				System.out.println("우상단");
+				break;
+
+			default:
+				break;
+			}
 			if (i == 1) {
 				if (!areaCheck(downIntercept, ballPos)) {
 					System.out.println("도달각 없음");
@@ -64,50 +97,89 @@ public class Test {
 			double reflect = 90 - Math.toDegrees(my2targetRad) + Math.toDegrees(ball2holeRad);
 			boolean crash = false;
 			boolean possible = true;
-			if (80 < Math.abs(90 - reflect)) {
+			if (90 < Math.abs(90 - reflect)) {
 				System.out.println("굴절각 불가능");
 				possible = false;
 			} else {
 				System.out.println("굴절 가능");
-				for(int j=1; j<6; j++) {
-					if(j==ballIdx)
+				for (int j = 1; j < balls.length; j++) {
+					if (j == ballIdx)
 						continue;
-					if(crashCheck(myPos, target, balls[j])||crashCheck(ballPos, holes[i], balls[j])){
+					if (crashCheck(myPos, target, balls[j]) || crashCheck(ballPos, holes[i], balls[j])) {
 						crash = true;
 					}
 				}
 			}
-			if(!crash && possible)
-				System.out.println("수구 각도:" + (90 - Math.toDegrees(my2targetRad)));
+			if (!crash && possible) {
+				double angle = 90 - Math.toDegrees(my2targetRad);
+				double refract = Math.abs(90 - reflect);
+				double targetDist = getDistance(myPos, target);
+				double holeDist = getDistance(ballPos, holes[i]);
+				candidate.add(new Double[] { refract, angle, targetDist, holeDist });
+			}
 		}
+		return candidate;
 	}
 
-	static double[] getAnswer(double[][] balls, int i) {
+	public static double[] getBest(double[][] inputballs, int[] hitlist) {
+		balls = inputballs;
+		System.out.println(Arrays.toString(balls[0]));
 		double[] ans = new double[] { 90, 100 };
 		double[] myPos = balls[0];
-		getRad(myPos, balls[i], i);
+		ArrayList<Double[]> candidate = new ArrayList<>();
+		
+		for (int i : hitlist) {
+			ArrayList<Double[]> temp = getRad(myPos, balls[i], i);
+			for (Double[] a : temp) {
+				candidate.add(a);
+			}
+		}
+		System.out.println(candidate.size());
+		Comparator<Double[]> comparator = new Comparator<Double[]>() {
+
+			@Override
+			public int compare(Double[] o1, Double[] o2) {
+				// TODO Auto-generated method stub
+				return (int) (o1[0] - o2[0]);
+			}
+		};
+		Collections.sort(candidate, comparator);
+		for (Double[] c : candidate) {
+			System.out.println(Arrays.toString(c));
+		}
+		if (candidate.size() != 0) {
+			ans = new double[] { candidate.get(0)[1], 50 };
+		}else {
+			double[] target = new double[] { inputballs[hitlist[0]][0],
+					inputballs[hitlist[0]][1]};
+			double my2targetRad = Math.atan2(target[1] - myPos[1], target[0] - myPos[0]);
+			double reflect = 90 - Math.toDegrees(my2targetRad);
+			ans = new double[] {reflect, 50};
+		}
+//		double[] target = new double[]  { inputballs[3][0], height*2-diameter-inputballs[3][1]};
+		double[] target = new double[]  { inputballs[4][0], diameter-inputballs[4][1]};
+//		double[] target = new double[]  { width/2+width+diameter*5/2, height };
+		double my2targetRad = Math.atan2(target[1] - myPos[1], target[0] - myPos[0]);
+		double reflect = 90 - Math.toDegrees(my2targetRad);
+		ans = new double[] {reflect, 50};
 		return ans;
 	}
 
 	public static void main(String[] args) {
+		System.out.println(Math.cos(Math.PI));
 		// double[] ball1 = new double[] { 71, 120 };
 		double[] ball1 = new double[] { 65, 65 };
-		double[] ball2 = new double[] { 215, 65 };
-		double[] ball3 = new double[] { 240, 124 };
-//		double[] ball3 = new double[] { 130, 72 };
+//		double[] ball2 = new double[] { 125, 120 };
+		double[] ball2 = new double[] { 30, 65 };
+//		double[] ball3 = new double[] { 240, 124 };
+		double[] ball3 = new double[] { 130, 100 };
 		double[] ball4 = new double[] { 254, 58 };
-		double[] ball5 = new double[] { 255, 5 };
+//		double[] ball5 = new double[] { 255, 5 };
+		double[] ball5 = new double[] { 205, 5 };
 		double[] ball6 = new double[] { 15, 10 };
-		balls = new double[][] { ball1, ball2, ball3, ball4, ball5, ball6 };
-		getAnswer(balls, 5);
+		balls = new double[][] { ball1, ball2 };
+//		balls = new double[][] { ball1, ball2, ball3, ball4, ball5, ball6 };
+//		double[] ans = getBest(balls, 1);
 
-//		double rad = Math.atan2(holes[4][1] - ball[1], holes[4][0] - ball[0]);
-//		System.out.println(Math.toDegrees(rad));
-//		double[] target = new double[2];
-//		target[0] = ball[0] - 6*Math.cos(rad);
-//		target[1] = ball[1] - 6*Math.sin(rad);
-//		System.out.println(target[0] + " " +target[1]);
-//		rad = Math.atan2(target[1] - myPos[1], target[0] - myPos[0]);
-//		System.out.println(Math.toDegrees(rad));
 	}
 }
