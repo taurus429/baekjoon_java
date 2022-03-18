@@ -41,7 +41,7 @@ public class p1766문제집 {
 			sb.append(" ");
 			while(!stack[cur].isEmpty()) {
 				int temp = stack[cur].pop();
-				before[temp]--;
+				before[temp]--; 
 				if(before[temp]==0)
 					pq.offer(temp);
 			}
