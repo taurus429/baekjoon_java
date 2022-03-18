@@ -24,33 +24,34 @@ public class Simulation extends Applet implements Runnable {
 	double[][] ry;
 
 	double G = 50;
-	double mu = 0.005;
+	double mu = 0.0002;
 	double[] R;
 	double[] vx;
 	double[] vy;
 	Color[] color;
 	boolean[] bool;
 	boolean[][] BG;
-	static double width = Test.width * 4;
-	static double height = Test.height * 4;
+	static int size = 4;
+	static double width = Test.width * size;
+	static double height = Test.height * size;
 	Thread t;
 	boolean wawawa = true;
 	int cnt = 0;
 	int first = 0;
 
 	static double transX(double x) {
-		return x * 4;
+		return x * size;
 	}
 
 	static double transY(double y) {
-		return height - y * 4;
+		return height - y * size;
 	}
 
 	static double[][] getPos(double[] posx, double[] posy) {
 		double[][] res = new double[posx.length][2];
 		for (int i = 0; i < posx.length; i++) {
-			res[i][0] = posx[i] / 4;
-			res[i][1] = (height - posy[i]) / 4;
+			res[i][0] = posx[i] / size;
+			res[i][1] = (height - posy[i]) / size;
 		}
 		return res;
 	}
@@ -77,7 +78,7 @@ public class Simulation extends Applet implements Runnable {
 
 		for (int i = 0; i < N; i++) {
 			m[i] = 1;
-			R[i] = 3.75 * 4;
+			R[i] = Test.diameter/2 * size;
 			vx[i] = 0;
 			vy[i] = 0;
 			bool[i] = true;
@@ -89,22 +90,21 @@ public class Simulation extends Applet implements Runnable {
 		color[3] = Color.pink;
 		color[4] = Color.blue;
 		color[5] = Color.blue;
-		posx[0] = transX(65);
-		posy[0] = transY(65);
+		posx[0] = transX(5);
+		posy[0] = transY(5);
 
-		posx[1] = transX(195);
-		posy[1] = transY(68);
+		posx[1] = transX(300);
+		posy[1] = transY(300);
+		posx[2] = transX(65);
+		posy[2] = transY(90);
 
-		posx[2] = transX(185);
-		posy[2] = transY(67);
+		posx[3] = transX(300);
+		posy[3] = transY(300);
 
-		posx[3] = transX(205);
-		posy[3] = transY(65);
-
-		posx[4] = transX(196);
-		posy[4] = transY(75);
-		posx[5] = transX(194);
-		posy[5] = transY(55);
+		posx[4] = transX(300);
+		posy[4] = transY(300);
+		posx[5] = transX(300);
+		posy[5] = transY(300);
 
 		addMouseListener(new MouseAdapter() {
 			@Override
@@ -116,8 +116,8 @@ public class Simulation extends Applet implements Runnable {
 
 				double rad = Math.toRadians(90 - angle);
 				if (first++ != -1) {
-					vx[0] = 5 * Math.cos(rad);
-					vy[0] = -5 * Math.sin(rad);
+					vx[0] = 3* ans[1] * Math.cos(rad);
+					vy[0] = -3* ans[1] * Math.sin(rad);
 				} else {
 					vx[0] = 9.77123953;
 					vy[0] = 0;
@@ -128,7 +128,6 @@ public class Simulation extends Applet implements Runnable {
 			}
 
 			public void mouseReleased(MouseEvent e) {
-				System.out.println("fslfjsld");
 			}
 		});
 	}
@@ -151,7 +150,7 @@ public class Simulation extends Applet implements Runnable {
 		Dimension d = getSize();
 		// 배경색
 		g.setColor(bgcolor);
-		//g.fillRect(0, 0, (int) width, (int) height);
+		g.fillRect(0, 0, (int) width, (int) height);
 		// 각각의 값 초기화
 		for (int i = 0; i < N; i++) {
 			if (!bool[i]) {
@@ -230,8 +229,8 @@ public class Simulation extends Applet implements Runnable {
 			g.fillOval((int) (posx[i] - R[i]), (int) (posy[i] - R[i]), 2 * (int) R[i], 2 * (int) R[i]);
 		}
 		g.setColor(Color.red);
-		g.fillRect(125 * 4, 130 * 4 - 2 * 4, 10 * 4, 2 * 4);
-		g.fillRect(125 * 4, 0, 10 * 4, 2 * 4);
+		g.fillRect(125 * size, 130 * size - 2 * size, 10 * size, 2 * size);
+		g.fillRect(125 * size, 0, 10 * size, 2 * size);
 
 	}
 }

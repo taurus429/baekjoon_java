@@ -6,11 +6,11 @@ import java.util.Collections;
 import java.util.Comparator;
 
 public class Test {
-	static double width = 260;
-	static double height = 130;
+	static double width = 254;
+	static double height = 127;
 	static int ball = 5;
-	static double realdiameter = 7.5;
-	static double diameter = 6.8;
+	static double realdiameter = 5.73;
+	static double diameter = 5.73;
 	static double[][] holes = new double[][] { { 0 + realdiameter / 2, 0 + realdiameter / 2 }, { width/2, 0 },
 			{ width - realdiameter / 2, 0 + realdiameter / 2 }, { 0 + realdiameter / 2, height - realdiameter / 2 }, { width/2, height },
 			{ width - realdiameter / 2, height - realdiameter / 2 } };
@@ -43,6 +43,13 @@ public class Test {
 			System.out.println(Arrays.toString(otherball));
 			return true;
 		} else {
+			double dx = otherball[0] - end[0];
+			double dy = otherball[1] - end[1];
+			double distance = Math.sqrt(Math.pow(dx, 2)+Math.pow(dy, 2));
+			if(distance<=diameter) {
+				System.out.println("둘레에 닿임");
+				return true;
+			}
 			return false;
 		}
 	}
@@ -111,6 +118,8 @@ public class Test {
 				}
 			}
 			if (!crash && possible) {
+				System.out.println(Arrays.toString(myPos));
+				System.out.println(Arrays.toString(target));
 				double angle = 90 - Math.toDegrees(my2targetRad);
 				double refract = Math.abs(90 - reflect);
 				double targetDist = getDistance(myPos, target);
@@ -120,7 +129,19 @@ public class Test {
 		}
 		return candidate;
 	}
-
+	static double getPower(double ball2hole, double reflect, double my2target) {
+		double m = 0.00009;
+		double angle = Math.toRadians(reflect);
+		double v0 = Math.sqrt(2*m*ball2hole);
+		double v1=0;
+		if(reflect==0) {
+			v1= v0;
+		}else {
+			v1=v0/Math.cos(angle);
+		}
+		double power = Math.sqrt(Math.pow(v1, 2)+2*m*my2target);
+		return power;
+	}
 	public static double[] getBest(double[][] inputballs, int[] hitlist) {
 		balls = inputballs;
 		System.out.println(Arrays.toString(balls[0]));
@@ -148,7 +169,7 @@ public class Test {
 			System.out.println(Arrays.toString(c));
 		}
 		if (candidate.size() != 0) {
-			ans = new double[] { candidate.get(0)[1], 50 };
+			ans = new double[] { candidate.get(0)[1], getPower(candidate.get(0)[3], candidate.get(0)[0], candidate.get(0)[2]) };
 		}else {
 			double[] target = new double[] { inputballs[hitlist[0]][0],
 					inputballs[hitlist[0]][1]};
@@ -157,15 +178,16 @@ public class Test {
 			ans = new double[] {reflect, 50};
 		}
 //		double[] target = new double[]  { inputballs[3][0], height*2-diameter-inputballs[3][1]};
-		double[] target = new double[]  { inputballs[4][0], diameter-inputballs[4][1]};
+//		double[] target = new double[]  { inputballs[4][0], diameter-inputballs[4][1]};
 //		double[] target = new double[]  { width/2+width+diameter*5/2, height };
-		double my2targetRad = Math.atan2(target[1] - myPos[1], target[0] - myPos[0]);
-		double reflect = 90 - Math.toDegrees(my2targetRad);
-		ans = new double[] {reflect, 50};
+//		double my2targetRad = Math.atan2(target[1] - myPos[1], target[0] - myPos[0]);
+//		double reflect = 90 - Math.toDegrees(my2targetRad);
+//		ans = new double[] {reflect, 50};
 		return ans;
 	}
 
 	public static void main(String[] args) {
+		System.out.println(crashCheck(new double[] {241.03007318599342, 50.139347733603714}, new double[] {188.94037795435082, 60.548680518971764}, new double[] {194.81705265770634, 54.001697154925}));
 		System.out.println(Math.cos(Math.PI));
 		// double[] ball1 = new double[] { 71, 120 };
 		double[] ball1 = new double[] { 65, 65 };
@@ -177,9 +199,14 @@ public class Test {
 //		double[] ball5 = new double[] { 255, 5 };
 		double[] ball5 = new double[] { 205, 5 };
 		double[] ball6 = new double[] { 15, 10 };
+		ball1 = new double[] { 65, 65 };
+		System.out.println(Math.sqrt(2));
+		ball2 = new double[] { 65*3+7.5/Math.sqrt(2), 65+7.5/Math.sqrt(2) };
+		ball2 = new double[] { 260-(65-diameter/2)/Math.sqrt(3), 65+Math.sqrt(3)*diameter/2 };
+		System.out.println(ball2[0]);
+		System.out.println(ball2[1]);
 		balls = new double[][] { ball1, ball2 };
 //		balls = new double[][] { ball1, ball2, ball3, ball4, ball5, ball6 };
-//		double[] ans = getBest(balls, 1);
-
+		double[] ans = getBest(balls, new int[] {1});
 	}
 }
