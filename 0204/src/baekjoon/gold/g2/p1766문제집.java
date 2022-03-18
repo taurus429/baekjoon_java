@@ -32,7 +32,7 @@ public class p1766문제집 {
 		for(int i=0; i<N; i++) {
 			if(before[i]==0) {
 				pq.offer(i);
-			}
+			} 
 		}
 		StringBuilder sb = new StringBuilder();
 		while(!pq.isEmpty()) {
