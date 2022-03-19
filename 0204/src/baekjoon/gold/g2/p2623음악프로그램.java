@@ -4,48 +4,60 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
-import java.util.PriorityQueue;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Stack;
 import java.util.StringTokenizer;
 
-public class p1766문제집 {
+public class p2623음악프로그램 {
 	static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 	static StringTokenizer st;
 	public static void main(String[] args) throws IOException {
-		st = new StringTokenizer(br.readLine());
+		st= new StringTokenizer(br.readLine());
 		int N = Integer.parseInt(st.nextToken());
 		int M = Integer.parseInt(st.nextToken());
+		int[] before = new int[N];
 		Stack<Integer>[] stack = new Stack[N];
 		for(int i=0; i<N; i++) {
 			stack[i] = new Stack<Integer>();
 		}
-		int[] before = new int[N];
-		
 		for(int i=0; i<M; i++) {
-			st = new  StringTokenizer(br.readLine());
-			int first = Integer.parseInt(st.nextToken())-1;
-			int next = Integer.parseInt(st.nextToken())-1;
-			stack[first].push(next);
-			before[next]++;
+			st = new StringTokenizer(br.readLine());
+			int connect = Integer.parseInt(st.nextToken());
+			int pre = 0;
+			int post = Integer.parseInt(st.nextToken())-1;
+			for(int j=0; j<connect-1; j++) {
+				pre = post;
+				post = Integer.parseInt(st.nextToken())-1;
+				stack[pre].push(post);
+				before[post] ++;
+			}
 		}
-		PriorityQueue<Integer> pq = new PriorityQueue<>();
+		Queue<Integer> queue = new LinkedList<Integer>();
+		int cnt =0;
 		for(int i=0; i<N; i++) {
 			if(before[i]==0) {
-				pq.offer(i);
+				queue.offer(i);
 			}
 		}
 		StringBuilder sb = new StringBuilder();
-		while(!pq.isEmpty()) {
-			int cur = pq.poll();
+		while(!queue.isEmpty()) {
+			int cur = queue.poll();
 			sb.append(cur+1);
-			sb.append(" ");
+			sb.append("\n");
+			cnt ++;
 			while(!stack[cur].isEmpty()) {
 				int temp = stack[cur].pop();
 				before[temp]--;
-				if(before[temp]==0)
-					pq.offer(temp);
+				if(before[temp]==0) {
+					queue.offer(temp);
+				}
 			}
 		}
-		System.out.println(sb);
+		if(cnt == N) {
+			System.out.println(sb);
+		} else {
+			System.out.println(0);
+		}
 	}
 }
