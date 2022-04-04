@@ -1,93 +1,66 @@
 package baekjoon.gold.g4;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.io.OutputStreamWriter;
+import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.StringTokenizer;
 
 public class p4485녹색옷입은애가젤다지 {
-	static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-	static StringTokenizer st;
-	
-	static class Node implements Comparable<Node>{
-		int end, weight;
-		
-		public Node(int end, int weight) {
-			super();
-			this.end = end;
-			this.weight = weight;
-		}
 
-		@Override
-		public int compareTo(Node o) {
-			// TODO Auto-generated method stub
-			return weight-o.weight;
-		}
-		
-	}
-	
-	public static void main(String[] args) throws NumberFormatException, IOException {
-		int N = Integer.parseInt(br.readLine());
-		int p = 1;
-		while(N!=0) {
-			int[][] thief = new int[N][N];
-			for(int i=0; i<N; i++) {
+	public static void main(String[] args) throws IOException {
+
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+		StringTokenizer st;
+		StringBuilder sb = new StringBuilder();
+		int T = 0;
+		int[][] tot;
+		int[][] d = { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } };
+		PriorityQueue<int[]> pq = new PriorityQueue<int[]>(new Comparator<int[]>() {
+			@Override
+			public int compare(int[] o1, int[] o2) {
+				return o1[2] - o2[2];
+			}
+		});
+		while (true) {
+			int N = Integer.parseInt(br.readLine());
+				break;
+				if (N == 0)
+			T++;
+			sb.append("Problem ").append(T).append(": ");
+			int[][] map = new int[N][N];
+			tot = new int[N][N];
+			for (int i = 0; i < N; i++) {
 				st = new StringTokenizer(br.readLine());
-				for(int j=0; j<N; j++) {
-					thief[i][j] = Integer.parseInt(st.nextToken());
+				for (int j = 0; j < N; j++) {
+					map[i][j] = Integer.parseInt(st.nextToken());
+					tot[i][j] = Integer.MAX_VALUE;
 				}
 			}
-			
-			int node = (int) Math.pow(N, 2)+1;
-			boolean[] visited = new boolean[node];
-			ArrayList<Node>[] adj = new ArrayList[node];
-			for(int i=0; i<node; i++) {
-				adj[i] = new ArrayList<Node>();
-			}
-			adj[0].add(new Node(1, thief[0][0]));
-			for(int i=1; i<node; i++) {
-				int posI = (i-1)/N;
-				int posJ = (i-1)%N;
-				if(posJ<N-1) {
-					adj[i].add(new Node(i+1, thief[posI][posJ+1]));
-				}
-				if(posJ>0) {
-					adj[i].add(new Node(i-1, thief[posI][posJ-1]));					
-				}
-				if(posI<N-1) {
-					adj[i].add(new Node(i+N, thief[posI+1][posJ]));
-				}
-				if(posI>0) {
-					adj[i].add(new Node(i-N, thief[posI-1][posJ]));
-				}
-			}
-			
-			PriorityQueue<Node> pq = new PriorityQueue<>();
-			int[] distance = new int[node];
-			Arrays.fill(distance, Integer.MAX_VALUE);
-			distance[0] = 0;
-			pq.offer(new Node(0, 0));
-			
-			while(!pq.isEmpty()) {
-				Node cur = pq.poll();
-				if(visited[cur.end])
-					continue;
-				visited[cur.end] = true;
-				
-				for(Node n: adj[cur.end]) {
-					if(distance[n.end]>distance[cur.end]+n.weight) {
-						distance[n.end]=distance[cur.end]+n.weight;
-						pq.offer(new Node(n.end, distance[n.end]));
+			tot[0][0] = map[0][0];
+			pq.offer(new int[] { 0, 0, map[0][0] });
+			label: while (!pq.isEmpty()) {
+				int[] x = pq.poll();
+				for (int i = 0; i < 4; i++) {
+					int nx = x[0] + d[i][0];
+					int ny = x[1] + d[i][1];
+					if (0 <= nx && nx < N && 0 <= ny && ny < N && tot[nx][ny] > tot[x[0]][x[1]] + map[nx][ny]) {
+						tot[nx][ny] = tot[x[0]][x[1]] + map[nx][ny];
+						pq.offer(new int[] { nx, ny, map[nx][ny] });
+						if(nx==N-1&&ny==N-1)
+							break label;
 					}
 				}
 			}
-			System.out.print("Problem "+ p+": ");
-			System.out.println(distance[node-1]);
-			p++;
-			N=Integer.parseInt(br.readLine());
+			sb.append(tot[N - 1][N - 1]).append("\n");
 		}
+		bw.write(sb.toString());
+		bw.flush();
+		bw.close();
 	}
+
 }
