@@ -7,15 +7,15 @@ import java.util.Arrays;
 
 public class p2239스도쿠 {
 	static BufferedReader br =new BufferedReader(new InputStreamReader(System.in));
-	static int[][] grid;
-	static boolean find;
+	static boolean done;
+	static int[][] sudoku;
 	static void back(int idx) {
 		
-		while(idx<=80&&grid[idx/9][idx%9]!=0) {
+		while(idx<=80&&sudoku[idx/9][idx%9]!=0) {
 			idx++;
 		}
 		if(idx>80) {
-			find = true;
+			done = true;
 			return;
 		}
 		boolean[] candidate = new boolean[10];
@@ -23,42 +23,42 @@ public class p2239스도쿠 {
 		prun(idx, candidate);
 		for(int i=1; i<10; i++) {
 			if(candidate[i]) {
-				grid[idx/9][idx%9]=i;
+				sudoku[idx/9][idx%9]=i;
 				back(idx);
-				if(find) {
+				if(done) {
 					return;
 				}
-				grid[idx/9][idx%9]=0;
+				sudoku[idx/9][idx%9]=0;
 			}
 		}
 	}
 	
-	static void prun(int idx, boolean[] candidate) {
+	static void prun(int idx, boolean[] possible) {
 		for(int i=0; i<9; i++) {
-			candidate[grid[i][idx%9]] = false;
-			candidate[grid[idx/9][i]] = false;
+			possible[sudoku[i][idx%9]] = false;
+			possible[sudoku[idx/9][i]] = false;
 		}
 		int startI = idx/9/3;
 		int startJ = idx%9/3;
 		for(int i=0; i<3; i++) {
 			for(int j=0; j<3; j++) {
-				candidate[grid[startI*3+i][startJ*3+j]] = false;
+				possible[sudoku[startI*3+i][startJ*3+j]] = false;
 			}
 		}
 	}
 	
 	public static void main(String[] args) throws IOException {
-		grid = new int[9][9];
+		sudoku = new int[9][9];
 		for(int i=0; i<9; i++) {
 			String temp = br.readLine();
 			for(int j=0; j<9 ;j++) {
-				grid[i][j] = temp.charAt(j)-48;
+				sudoku[i][j] = temp.charAt(j)-48;
 			}
 		}
 		back(0);
 		for(int i=0; i<9; i++) {
 			for(int j=0; j<9; j++) {
-				System.out.print(grid[i][j]);
+				System.out.print(sudoku[i][j]);
 			}
 			System.out.println();
 		}

@@ -102,7 +102,7 @@ public class p1767프로세서연결하기2 {
 					ans = Math.min(ans, count - processorCnt);
 				else {
 					maxConnect = connect;
-					ans = count;
+					ans = count - processorCnt;
 				}
 			}
 			return;

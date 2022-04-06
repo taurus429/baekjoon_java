@@ -8,7 +8,7 @@ import javax.management.openmbean.OpenMBeanOperationInfo;
 import java.io.BufferedReader;
 import java.io.IOException;
 
-public class p16637 {
+public class p16637괄호추가하기 {
 	static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 	static int N;
 	static boolean[] bracket;

@@ -1,164 +1,133 @@
 package swea;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.StringTokenizer;
-
+ 
 public class p1767프로세서연결하기 {
-	static int size, N, ans, maxConnect;
-
-	static boolean checkright(boolean[][] grid, int posI, int posJ) {
-		boolean res = true;
-		posJ++;
-		while (posJ < N) {
-			if (grid[posI][posJ++]) {
-				res = false;
-				break;
-			}
-		}
-		return res;
-	}
-
-	static boolean checkleft(boolean[][] grid, int posI, int posJ) {
-		boolean res = true;
-		posJ--;
-		while (posJ >= 0) {
-			if (grid[posI][posJ--]) {
-				res = false;
-				break;
-			}
-		}
-		return res;
-	}
-
-	static boolean checkdown(boolean[][] grid, int posI, int posJ) {
-		boolean res = true;
-		posI++;
-		while (posI < N) {
-			if (grid[posI++][posJ]) {
-				res = false;
-				break;
-			}
-		}
-		return res;
-	}
-
-	static boolean checkup(boolean[][] grid, int posI, int posJ) {
-		boolean res = true;
-		posI--;
-		while (posI >= 0) {
-			if (grid[posI--][posJ]) {
-				res = false;
-				break;
-			}
-		}
-		return res;
-	}
-
-	static void fillright(boolean[][] grid, int posI, int posJ, boolean bool) {
-		posJ++;
-		while (posJ < N) {
-			grid[posI][posJ++] = bool;
-		}
-	}
-
-	static void fillleft(boolean[][] grid, int posI, int posJ, boolean bool) {
-		posJ--;
-		while (posJ >= 0) {
-			grid[posI][posJ--] = bool;
-		}
-	}
-
-	static void fillup(boolean[][] grid, int posI, int posJ, boolean bool) {
-		posI++;
-		while (posI >= 0) {
-			grid[posI--][posJ] = bool;
-		}
-	}
-
-	static void filldown(boolean[][] grid, int posI, int posJ, boolean bool) {
-		posI--;
-		while (posI < N) {
-			grid[posI++][posJ] = bool;
-		}
-	}
-
-	static void bfs(ArrayList<int[]> processor, boolean[][] grid, int cnt, int connect) {
-		if(connect+N-cnt<maxConnect)
-			return;
-		if (cnt == size) {
-			if (connect >= maxConnect) {
-				int count = 0;
-				for (int i = 0; i < N; i++) {
-					for (int j = 0; j < N; j++) {
-						if (grid[i][j])
-							count++;
-					}
-				}
-				if (connect == maxConnect)
-					ans = Math.min(ans, count - size);
-				else {
-					maxConnect = connect;
-					ans = count;
-				}
-			}
-			return;
-		}
-		int[] cur = processor.get(cnt).clone();
-		if (checkdown(grid, cur[0], cur[1])) {
-			filldown(grid, cur[0], cur[1], true);
-			bfs(processor, grid, cnt + 1, connect + 1);
-			filldown(grid, cur[0], cur[1], false);
-		}
-		cur = processor.get(cnt).clone();
-		if (checkup(grid, cur[0], cur[1])) {
-			fillup(grid, cur[0], cur[1], true);
-			bfs(processor, grid, cnt + 1, connect + 1);
-			fillup(grid, cur[0], cur[1], false);
-		}
-		cur = processor.get(cnt).clone();
-		if (checkright(grid, cur[0], cur[1])) {
-			fillright(grid, cur[0], cur[1], true);
-			bfs(processor, grid, cnt + 1, connect + 1);
-			fillright(grid, cur[0], cur[1], false);
-		}
-		cur = processor.get(cnt).clone();
-		if (checkleft(grid, cur[0], cur[1])) {
-			fillleft(grid, cur[0], cur[1], true);
-			bfs(processor, grid, cnt + 1, connect + 1);
-			fillleft(grid, cur[0], cur[1], false);
-		}
-		bfs(processor, grid, cnt + 1, connect);
-	}
-
-	public static void main(String[] args) throws NumberFormatException, IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st;
-		int testcase = Integer.parseInt(br.readLine());
-		for (int t = 1; t <= testcase; t++) {
-			N = Integer.parseInt(br.readLine());
-			boolean[][] grid = new boolean[N][N];
-			ArrayList<int[]> processor = new ArrayList<>();
-			for (int i = 0; i < N; i++) {
-				st = new StringTokenizer(br.readLine());
-				for (int j = 0; j < N; j++) {
-					if (st.nextToken().equals("1")) {
-						grid[i][j] = true;
-						if(i!=0&&i!=N-1&&j!=0&&j!=N-1)
-						processor.add(new int[] { i, j });
-					}
-				}
-			}
-			maxConnect = 0;
-			ans = Integer.MAX_VALUE;
-			size = processor.size();
-			System.out.println(size);
-			bfs(processor, grid, 0, 0);
-			System.out.println(maxConnect);
-			System.out.println("#" + t + " " + ans);
-		}
-	}
+ 
+    static class Process {
+        int y;
+        int x;
+ 
+        Process(int y, int x) {
+            this.y = y;
+            this.x = x;
+        }
+    }
+ 
+    static int N;
+    static int[][] map;
+    static int[] dy = { -1, 1, 0, 0 };
+    static int[] dx = { 0, 0, -1, 1 };
+ 
+    static ArrayList<Process> list;
+    static int min;
+    static int max;
+ 
+    public static void main(String[] args) throws Exception {
+ 
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+ 
+        int ts = Integer.parseInt(br.readLine().trim());
+ 
+        for (int t = 1; t <= ts; t++) {
+ 
+            N = Integer.parseInt(br.readLine().trim());
+ 
+            map = new int[N][N];
+            list = new ArrayList<>();
+ 
+            for (int i = 0; i < N; i++) {
+                StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+                for (int j = 0; j < N; j++) {
+                    map[i][j] = Integer.parseInt(st.nextToken());
+                    if (map[i][j] == 1) {
+                        if (i - 1 < 0 || j - 1 < 0 || i + 1 >= N || j + 1 >= N)
+                            continue;
+                        list.add(new Process(i, j)); // 벽이 아닌 코어 저장
+                    }
+                }
+            }
+            min = Integer.MAX_VALUE;
+            max = Integer.MIN_VALUE;
+            
+            dfs(0,0,0);
+            
+            System.out.println("#" + t + " " + min);
+        }
+ 
+    }
+    
+    public static void dfs(int idx, int coreCnt, int len) {
+        
+        //종료조건 : 증가되는 인덱스가 list의 사이즈만큼 되었을 때
+        if(idx == list.size()) {
+            if(max < coreCnt) { // 코어 개수가 더 많아서 갱신해야할 때
+                max = coreCnt;
+                min = len;
+            }
+            else if (max == coreCnt) { // 코어 개수가 같아서 길이 비교
+                if(min > len) min = len;
+            }
+            return;
+        }
+        
+        int y = list.get(idx).y;
+        int x = list.get(idx).x;
+        
+        for (int dir = 0; dir < 4; dir++) {
+            
+            int count = 0;
+            int originY = y;
+            int originX = x;
+            int ny = y;
+            int nx = x;
+            
+            while(true) {
+                ny += dy[dir];
+                nx += dx[dir];
+                
+                if(ny < 0 || nx < 0 || ny>=N || nx>=N) { // 벽을 만날때까지
+                    break;
+                }
+                
+                if(map[ny][nx] == 1) { // 전선을 만나면 못가는 곳
+                    count = 0;
+                    break;
+                }
+                
+                count++;
+            }
+            
+            //len += count;
+            
+            for (int i = 0; i < count; i++) {
+                originY += dy[dir];
+                originX += dx[dir];
+                
+                map[originY][originX] = 1;
+            }
+            
+            if(count == 0) { // 전선을 연결할 수 없는 코어
+                dfs(idx+1, coreCnt, len);
+            }
+            else {
+                dfs(idx+1, coreCnt+1, len+count);
+                
+                originY = y;
+                originX = x;
+                for (int i = 0; i < count; i++) {
+                    originY += dy[dir];
+                    originX += dx[dir];
+                    
+                    map[originY][originX] = 0;
+                }
+                //len -= count;
+            }
+            
+        }
+        
+    }
 }
