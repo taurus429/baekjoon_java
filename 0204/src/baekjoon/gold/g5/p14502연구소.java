@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class p14502 {
+public class p14502연구소 {
 	static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 	static int[] com = new int[3];
 	static int c;
