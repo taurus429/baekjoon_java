@@ -8,7 +8,8 @@ import java.util.StringTokenizer;
 
 public class p15684사다리조작 {
 	static boolean[][] ladder;
-	static int width, height;
+	static int width, height, min = Integer.MAX_VALUE;
+	static ArrayList<int[]> candidate;
 	static boolean check() {
 		for(int i=0; i<width; i++) {
 			int cur = i;
@@ -25,6 +26,17 @@ public class p15684사다리조작 {
 		}
 		return true;
 	}
+	static void combi(int idx, int cnt) {
+		if(cnt>3) return;
+		if(check())
+			min = Math.min(min, cnt);
+		for(int i=idx; i<candidate.size(); i++) {
+			int[] c = candidate.get(i);
+			ladder[c[0]][c[1]] = true;
+			combi(i+1, cnt+1);
+			ladder[c[0]][c[1]] = false;
+		}
+	}
 	public static void main(String[] args) throws NumberFormatException, IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st = new StringTokenizer(br.readLine());
@@ -38,7 +50,7 @@ public class p15684사다리조작 {
 			int posJ = Integer.parseInt(st.nextToken())-1;
 			ladder[posI][posJ]=true;
 		}
-		ArrayList<int[]> candidate = new ArrayList<>();
+		candidate = new ArrayList<>();
 		for(int i=0; i<height; i++) {
 			for(int j=0; j<width-1; j++) {
 				if(!ladder[i][j]) {
@@ -46,7 +58,11 @@ public class p15684사다리조작 {
 				}
 			}
 		}
-		System.out.println(candidate.size());
-		check();
+		combi(0, 0);
+		if(min==Integer.MAX_VALUE) {
+			System.out.println(-1);
+		}else {
+			System.out.println(min);
+		}
 	}
 }
