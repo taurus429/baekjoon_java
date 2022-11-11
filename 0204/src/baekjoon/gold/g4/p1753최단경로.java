@@ -44,7 +44,7 @@ public class p1753최단경로 {
 		int[] minDist = new int[node];
 		Arrays.fill(minDist, Integer.MAX_VALUE);
 		PriorityQueue<Node> queue = new PriorityQueue<>();
-		queue.offer(new Node(0, 0));
+		queue.offer(new Node(startNode, 0));
 		boolean[] visited = new boolean[node];
 		minDist[startNode] = 0;
 		while(!queue.isEmpty()) {
